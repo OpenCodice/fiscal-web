@@ -4,10 +4,9 @@
   "main": "worker/index.ts",
   "compatibility_date": "2026-01-01",
 
-  // Dominio de marca. Descomenta y ajusta cuando la zona esté en Cloudflare
-  // (custom_domain crea el registro DNS + certificado automáticamente). Sin
-  // esto, el Worker queda en https://fiscal-web.<subdominio>.workers.dev.
-  // "routes": [{ "pattern": "fiscal.app", "custom_domain": true }],
+  // Dominio de marca. La zona constitucion.app ya está en Cloudflare;
+  // custom_domain crea el registro DNS + certificado del subdominio automáticamente.
+  "routes": [{ "pattern": "sat.constitucion.app", "custom_domain": true }],
 
   // El frontend compilado (vite build → ./dist) se sirve desde el edge.
   // not_found_handling=single-page-application: cualquier ruta desconocida
@@ -28,8 +27,8 @@
   "kv_namespaces": [
     {
       "binding": "PASAJES",
-      "id": "REEMPLAZAR_ID_DE_KV",
-      "preview_id": "REEMPLAZAR_PREVIEW_ID_DE_KV"
+      "id": "5ee6249c64cd4e62be0dea77a733822e",
+      "preview_id": "99bd2d234e544a2f8d0874a1cbd83596"
     }
   ],
 

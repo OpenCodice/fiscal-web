@@ -14,7 +14,7 @@
     "deploy": "vite build && wrangler deploy",
     "ingest": "node scripts/ingest.mjs",
     "pdfs": "node scripts/fetch-pdfs.mjs",
-    "upload:vectors": "wrangler vectorize upsert fiscal-pasajes --file ./.data/vectors.ndjson",
+    "upload:vectors": "wrangler vectorize upsert fiscal-pasajes --file ./.data/vectors.ndjson --batch-size 500",
     "upload:kv": "wrangler kv bulk put ./.data/kv-pasajes.json --binding PASAJES --preview false",
     "typecheck": "tsc -p tsconfig.json && tsc -p tsconfig.worker.json"
   },

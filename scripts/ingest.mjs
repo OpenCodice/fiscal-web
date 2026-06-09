@@ -16,7 +16,14 @@
 //   OPENAI_API_KEY=sk-... node scripts/ingest.mjs [ruta-al-repo-de-datos]
 //   (default: ../fiscal-mexicano)
 
-import { readFileSync, readdirSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
+import {
+  readFileSync,
+  readdirSync,
+  mkdirSync,
+  existsSync,
+  createWriteStream,
+} from "node:fs";
+import { once } from "node:events";
 import { join } from "node:path";
 
 const DATA_REPO = process.argv[2] ?? "../fiscal-mexicano";
@@ -104,34 +111,51 @@ async function embedBatch(texts) {
 const corpus = loadCorpus();
 console.log(`${corpus.length} pasajes (de los documentos en documentos.json).`);
 
-const vectorLines = [];
-const kvPairs = [];
+// Escritura en STREAMING: con 27 k vectores (~26 KB/línea) el archivo ronda
+// ~700 MB; acumular y `Array.join` revienta el límite de string de V8
+// (RangeError: Invalid string length). Escribimos línea por línea y honramos
+// backpressure (`drain`) para acotar la memoria.
+if (!existsSync(OUT_DIR)) mkdirSync(OUT_DIR, { recursive: true });
+const vecStream = createWriteStream(join(OUT_DIR, "vectors.ndjson"));
+const kvStream = createWriteStream(join(OUT_DIR, "kv-pasajes.json"));
+
+async function write(stream, chunk) {
+  if (!stream.write(chunk)) await once(stream, "drain");
+}
+
+kvStream.write("["); // kv-pasajes.json es un arreglo JSON
+let nVec = 0;
+let kvFirst = true;
 
 for (let i = 0; i < corpus.length; i += BATCH) {
   const slice = corpus.slice(i, i + BATCH);
   const vectors = await embedBatch(slice.map((c) => c.search));
 
-  slice.forEach((c, j) => {
-    const p = c.pasaje;
-    vectorLines.push(
+  for (let j = 0; j < slice.length; j++) {
+    const p = slice[j].pasaje;
+    await write(
+      vecStream,
       JSON.stringify({
         id: p.id,
         values: vectors[j],
         metadata: { documento: p.documento, clave_unidad: p.clave_unidad },
-      }),
+      }) + "\n",
     );
+    nVec++;
     // El registro completo va a KV: de aquí salen las citas verificables.
-    kvPairs.push({ key: p.id, value: JSON.stringify(p) });
-  });
+    await write(kvStream, (kvFirst ? "" : ",") + JSON.stringify({ key: p.id, value: JSON.stringify(p) }));
+    kvFirst = false;
+  }
   console.log(`  embebidos ${Math.min(i + BATCH, corpus.length)}/${corpus.length}`);
 }
 
-if (!existsSync(OUT_DIR)) mkdirSync(OUT_DIR, { recursive: true });
-writeFileSync(join(OUT_DIR, "vectors.ndjson"), vectorLines.join("\n") + "\n");
-writeFileSync(join(OUT_DIR, "kv-pasajes.json"), JSON.stringify(kvPairs));
+kvStream.write("]");
+vecStream.end();
+kvStream.end();
+await Promise.all([once(vecStream, "finish"), once(kvStream, "finish")]);
 
-console.log(`\n✓ ${OUT_DIR}/vectors.ndjson  (${vectorLines.length} vectores)`);
-console.log(`✓ ${OUT_DIR}/kv-pasajes.json (${kvPairs.length} registros)`);
+console.log(`\n✓ ${OUT_DIR}/vectors.ndjson  (${nVec} vectores)`);
+console.log(`✓ ${OUT_DIR}/kv-pasajes.json (${nVec} registros)`);
 console.log("\nAhora súbelos (wrangler trocea internamente los lotes):");
 console.log("  npm run upload:vectors");
 console.log("  npm run upload:kv");
