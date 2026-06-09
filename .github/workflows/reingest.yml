@@ -72,5 +72,5 @@ jobs:
             clave="$(basename "$f" .pdf)"
             echo "→ fiscal-pdf/${clave}.pdf"
             npx wrangler r2 object put "fiscal-pdf/${clave}.pdf" \
-              --file "$f" --content-type application/pdf --remote
+              --file "$f" --content-type application/pdf
           done
