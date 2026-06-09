@@ -18,7 +18,9 @@ on:
     types: [datos-actualizados]
   workflow_dispatch:
   schedule:
-    - cron: "0 9 * * 1" # lunes 09:00 UTC
+    # martes 09:00 UTC: un día después del watcher de fiscal-mexicano (lunes),
+    # para que la red de seguridad alcance a ver un PR de reforma ya mergeado
+    - cron: "0 9 * * 2"
 
 concurrency:
   group: reingest
