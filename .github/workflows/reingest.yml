@@ -1,0 +1,76 @@
+name: Reingestar índice (Vectorize + KV + PDFs)
+
+# Reconstruye el índice del buscador desde el repo de datos y lo sube a
+# Vectorize + KV; además descarga los PDF oficiales por documento y los sube a
+# R2 (para el visor con resaltado). Se dispara:
+#   - repository_dispatch: lo manda fiscal-mexicano al cambiar los datos
+#   - workflow_dispatch:   a mano
+#   - schedule:            red de seguridad semanal (por si se perdió un dispatch)
+#
+# Secrets requeridos en ESTE repo (fiscal-web):
+#   OPENAI_API_KEY         embeddings
+#   CLOUDFLARE_API_TOKEN   permisos: Vectorize (edit) + Workers KV Storage (edit)
+#                          + Workers R2 Storage (edit)
+#   CLOUDFLARE_ACCOUNT_ID  id de la cuenta
+
+on:
+  repository_dispatch:
+    types: [datos-actualizados]
+  workflow_dispatch:
+  schedule:
+    - cron: "0 9 * * 1" # lunes 09:00 UTC
+
+concurrency:
+  group: reingest
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+  CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+  CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+jobs:
+  reingest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout de la app
+        uses: actions/checkout@v5
+
+      - name: Checkout de los datos (fiscal-mexicano)
+        uses: actions/checkout@v5
+        with:
+          repository: OpenCodice/fiscal-mexicano
+          path: fiscal-mexicano
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Generar embeddings (datos → .data/)
+        run: npm run ingest -- ./fiscal-mexicano
+
+      - name: Subir vectores a Vectorize (upsert)
+        run: npm run upload:vectors
+
+      - name: Subir pasajes a KV
+        run: npm run upload:kv
+
+      - name: Descargar los PDF oficiales (uno por documento)
+        run: npm run pdfs -- ./fiscal-mexicano
+
+      - name: Subir los PDF a R2 (uno por documento)
+        run: |
+          for f in .data/pdfs/*.pdf; do
+            clave="$(basename "$f" .pdf)"
+            echo "→ fiscal-pdf/${clave}.pdf"
+            npx wrangler r2 object put "fiscal-pdf/${clave}.pdf" \
+              --file "$f" --content-type application/pdf
+          done

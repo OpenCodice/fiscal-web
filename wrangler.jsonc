@@ -1,0 +1,59 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "fiscal-web",
+  "main": "worker/index.ts",
+  "compatibility_date": "2026-01-01",
+
+  // Dominio de marca. Descomenta y ajusta cuando la zona esté en Cloudflare
+  // (custom_domain crea el registro DNS + certificado automáticamente). Sin
+  // esto, el Worker queda en https://fiscal-web.<subdominio>.workers.dev.
+  // "routes": [{ "pattern": "fiscal.app", "custom_domain": true }],
+
+  // El frontend compilado (vite build → ./dist) se sirve desde el edge.
+  // not_found_handling=single-page-application: cualquier ruta desconocida
+  // devuelve index.html (la SPA enruta del lado del cliente).
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application"
+  },
+
+  // Índice vectorial (1536 dims = text-embedding-3-small, cosine).
+  // Crear una vez:  npx wrangler vectorize create fiscal-pasajes --dimensions=1536 --metric=cosine
+  "vectorize": [{ "binding": "VECTORIZE", "index_name": "fiscal-pasajes" }],
+
+  // Pasajes completos (fuente confiable de las citas). Crea el namespace y
+  // reemplaza los ids:  npx wrangler kv namespace create PASAJES
+  //                     npx wrangler kv namespace create PASAJES --preview
+  "kv_namespaces": [
+    {
+      "binding": "PASAJES",
+      "id": "REEMPLAZAR_ID_DE_KV",
+      "preview_id": "REEMPLAZAR_PREVIEW_ID_DE_KV"
+    }
+  ],
+
+  // PDFs oficiales (uno por documento) para el visor con resaltado.
+  // Servidos en /pdf/<documento>.pdf (p. ej. /pdf/cff.pdf).
+  // Crear una vez:  npx wrangler r2 bucket create fiscal-pdf
+  "r2_buckets": [{ "binding": "PDF", "bucket_name": "fiscal-pdf" }],
+
+  "observability": { "enabled": true },
+
+  // Rate limiting por IP con Durable Object (confiable y exacto, vs el binding
+  // nativo beta que no enforza). SQLite-backed → compatible con plan free.
+  "durable_objects": {
+    "bindings": [{ "name": "RATE_LIMITER", "class_name": "RateLimiter" }]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["RateLimiter"] }],
+
+  // Variables NO secretas. La OPENAI_API_KEY va como secret:
+  //   npx wrangler secret put OPENAI_API_KEY
+  // Para enrutar por AI Gateway (caché + rate limit + analítica de costo),
+  // crea un gateway y añade aquí:
+  //   "OPENAI_BASE": "https://gateway.ai.cloudflare.com/v1/<account>/<gateway>/openai"
+  "vars": {
+    "EMBED_MODEL": "text-embedding-3-small",
+    "CHAT_MODEL": "gpt-4o-mini"
+  }
+}
