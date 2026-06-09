@@ -96,15 +96,38 @@ function searchText(p, enrich) {
 }
 
 // --- embeddings ------------------------------------------------------------- //
-async function embedBatch(texts) {
-  const r = await fetch(`${OPENAI_BASE}/embeddings`, {
-    method: "POST",
-    headers: { "content-type": "application/json", authorization: `Bearer ${API_KEY}` },
-    body: JSON.stringify({ model: EMBED_MODEL, input: texts }),
-  });
-  if (!r.ok) throw new Error(`embeddings ${r.status}: ${await r.text()}`);
-  const j = await r.json();
-  return j.data.map((d) => d.embedding);
+const sleep = (ms) => new Promise((res) => setTimeout(res, ms));
+
+// Reintenta ante fallos transitorios (red, 429, 5xx) con backoff exponencial,
+// para que un blip de la API no tumbe todo el reindex (el corpus fiscal es
+// grande → muchos lotes). Los 4xx (salvo 429) no se reintentan: son reales.
+async function embedBatch(texts, intentos = 5) {
+  let espera = 1000;
+  for (let i = 1; ; i++) {
+    let r = null;
+    try {
+      r = await fetch(`${OPENAI_BASE}/embeddings`, {
+        method: "POST",
+        headers: { "content-type": "application/json", authorization: `Bearer ${API_KEY}` },
+        body: JSON.stringify({ model: EMBED_MODEL, input: texts }),
+      });
+    } catch (e) {
+      if (i >= intentos) throw e;
+    }
+    if (r && r.ok) {
+      const j = await r.json();
+      return j.data.map((d) => d.embedding);
+    }
+    const transitorio = !r || r.status === 429 || r.status >= 500;
+    if (!transitorio || i >= intentos) {
+      throw new Error(`embeddings ${r ? r.status : "network"} (intento ${i}): ${r ? await r.text() : "fetch failed"}`);
+    }
+    const retryAfter = r?.headers.get("retry-after");
+    const wait = retryAfter ? Number(retryAfter) * 1000 : espera;
+    console.warn(`  ⚠ embeddings ${r ? r.status : "network"}; reintento ${i}/${intentos - 1} en ${wait}ms`);
+    await sleep(wait);
+    espera = Math.min(espera * 2, 30000);
+  }
 }
 
 // --- main ------------------------------------------------------------------- //

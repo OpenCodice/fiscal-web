@@ -15,7 +15,7 @@
     "ingest": "node scripts/ingest.mjs",
     "pdfs": "node scripts/fetch-pdfs.mjs",
     "upload:vectors": "wrangler vectorize upsert fiscal-pasajes --file ./.data/vectors.ndjson --batch-size 500",
-    "upload:kv": "wrangler kv bulk put ./.data/kv-pasajes.json --binding PASAJES --preview false",
+    "upload:kv": "wrangler kv bulk put ./.data/kv-pasajes.json --binding PASAJES --preview false --remote",
     "typecheck": "tsc -p tsconfig.json && tsc -p tsconfig.worker.json"
   },
   "devDependencies": {
@@ -27,7 +27,7 @@
     "tailwindcss": "^4.0.0",
     "typescript": "^5.7.0",
     "vite": "^6.0.0",
-    "wrangler": "^3.95.0"
+    "wrangler": "^4.98.0"
   },
   "dependencies": {
     "pdfjs-dist": "^6.0.227"
