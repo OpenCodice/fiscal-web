@@ -37,7 +37,7 @@ export default {
     }
     // PDF oficial por documento (para el visor con resaltado): /pdf/<clave>.pdf.
     if (url.pathname.startsWith("/pdf/") && url.pathname.endsWith(".pdf")) {
-      return servePdf(env, url.pathname);
+      return servePdf(env, url.pathname, request);
     }
     if (url.pathname.startsWith("/api/")) {
       return new Response("Not found", { status: 404 });
@@ -48,7 +48,7 @@ export default {
   },
 } satisfies ExportedHandler<Env>;
 
-async function servePdf(env: Env, pathname: string): Promise<Response> {
+async function servePdf(env: Env, pathname: string, request: Request): Promise<Response> {
   // /pdf/<clave>.pdf → clave del documento. Solo [a-z0-9-] para evitar
   // path traversal y normalizar contra las claves del registro (cff, rmf-2026…).
   const clave = pathname.slice("/pdf/".length, -".pdf".length);
@@ -56,9 +56,15 @@ async function servePdf(env: Env, pathname: string): Promise<Response> {
   const object = await env.PDF.get(`${clave}.pdf`);
   if (!object) return new Response("PDF no encontrado", { status: 404 });
   const headers = new Headers();
-  headers.set("content-type", "application/pdf");
-  headers.set("cache-control", "public, max-age=86400");
   headers.set("etag", object.httpEtag);
+  // Revalida por ETag en cada carga: el navegador cachea pero comprueba si el
+  // PDF cambió. Así, tras actualizar un documento, no resalta las coordenadas
+  // nuevas sobre el PDF viejo (no hay campo `version` para versionar la URL).
+  headers.set("cache-control", "no-cache");
+  if (request.headers.get("if-none-match") === object.httpEtag) {
+    return new Response(null, { status: 304, headers });
+  }
+  headers.set("content-type", "application/pdf");
   return new Response(object.body, { headers });
 }
 
