@@ -128,6 +128,32 @@ export async function retrieve(
 
 const numeroParrafo = (id: string) => Number(id.match(/\.p(\d+)$/)?.[1] ?? 0);
 
+const _sinAcentos = (s: string) =>
+  s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+
+/** Palabras con carga semántica de la pregunta (≥5 letras, sin acentos). */
+function palabrasClave(pregunta: string): string[] {
+  return [...new Set(_sinAcentos(pregunta).split(/[^a-zñ]+/).filter((w) => w.length >= 5))];
+}
+
+/** Párrafos de una unidad, hidratados de KV en orden de párrafo. */
+async function parrafosDeUnidad(
+  env: Env,
+  unidad: string,
+  asOf: string | null,
+  excepto: Set<string>,
+): Promise<Hit[]> {
+  const { keys } = await env.PASAJES.list({ prefix: `${unidad}.p` });
+  const ids = keys
+    .map((k) => k.name)
+    .filter((id) => !excepto.has(id))
+    .sort((a, b) => numeroParrafo(a) - numeroParrafo(b));
+  const recs = await Promise.all(ids.map((id) => env.PASAJES.get<Pasaje>(id, "json")));
+  return recs
+    .filter((r): r is Pasaje => !!r && vigente(r, asOf))
+    .map((r) => ({ ...r, _score: 0 }));
+}
+
 /**
  * Preguntas-lista: los artículos largos (2-A LIVA, 27 LISR) están partidos por
  * fracción y el top-k trae incisos sueltos — el LLM responde con el pedazo que
@@ -155,18 +181,7 @@ export async function expandUnidades(
   const faltantes = new Map<string, Hit[]>();
   await Promise.all(
     expandibles.map(async (u) => {
-      const { keys } = await env.PASAJES.list({ prefix: `${u}.p` });
-      const ids = keys
-        .map((kk) => kk.name)
-        .filter((id) => !have.has(id))
-        .sort((a, b) => numeroParrafo(a) - numeroParrafo(b));
-      const recs = await Promise.all(ids.map((id) => env.PASAJES.get<Pasaje>(id, "json")));
-      faltantes.set(
-        u,
-        recs
-          .filter((r): r is Pasaje => !!r && vigente(r, asOf))
-          .map((r) => ({ ...r, _score: 0 })),
-      );
+      faltantes.set(u, await parrafosDeUnidad(env, u, asOf, have));
     }),
   );
 
@@ -196,6 +211,58 @@ export async function expandUnidades(
       emitido.add(c.id);
       out.push(c);
     }
+  }
+  return out;
+}
+
+/**
+ * Fuente primaria por referencia cruzada: los criterios/reglas citan en su
+ * texto al artículo de ley que desarrollan y el corpus trae esas citas ya
+ * resueltas (`referencias`, capa derivada de fiscal-mexicano). Sin esto, el
+ * RAG recupera al satélite que parafrasea y el artículo de ley nunca llega al
+ * contexto. De cada unidad referida entran sus primeros párrafos (la regla
+ * general abre el artículo) más los que comparten vocabulario con la pregunta
+ * (en un artículo-lista largo, la fracción relevante vive adentro).
+ */
+export async function expandReferencias(
+  env: Env,
+  pregunta: string,
+  hits: Hit[],
+  asOf: string | null,
+  maxRefs = 6,
+  porUnidad = 8,
+  maxTotal = 48,
+): Promise<Hit[]> {
+  const presentes = new Set(hits.map((h) => `${h.documento}/${h.clave_unidad}`));
+  const refs: string[] = [];
+  for (const h of hits) {
+    for (const r of h.referencias ?? []) {
+      if (!presentes.has(r) && !refs.includes(r)) refs.push(r);
+    }
+  }
+  if (!refs.length || hits.length >= maxTotal) return hits;
+
+  const palabras = palabrasClave(pregunta);
+  const have = new Set(hits.map((h) => h.id));
+  const out = [...hits];
+  const unidades = await Promise.all(
+    refs.slice(0, maxRefs).map((r) => parrafosDeUnidad(env, r, asOf, have)),
+  );
+  for (const parrafos of unidades) {
+    const presupuesto = Math.min(porUnidad, maxTotal - out.length);
+    if (presupuesto <= 0) break;
+    const relevantes = new Set(
+      parrafos
+        .map((p) => ({ p, n: palabras.filter((w) => _sinAcentos(p.texto).includes(w)).length }))
+        .filter((x) => x.n > 0)
+        .sort((a, b) => b.n - a.n)
+        .slice(0, presupuesto)
+        .map((x) => x.p.id),
+    );
+    const sel = parrafos
+      .filter((p, i) => i < 2 || relevantes.has(p.id))
+      .slice(0, presupuesto);
+    out.push(...sel);
   }
   return out;
 }

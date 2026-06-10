@@ -25,6 +25,8 @@ export interface Pasaje {
   documento: string; // clave del documento: "cff", "lisr", "rmf-2026", …
   clave_unidad: string; // unidad dentro del doc: "027", "2.7.1.21", "10-iva-n"
   fuente: string; // nombre legible del documento ("Código Fiscal de la Federación")
+  contexto?: string; // jerarquía Título/Capítulo/Sección (nombres) — recall, no es cita
+  referencias?: string[]; // ids documento/unidad citados en el texto (capa derivada)
   archivo_texto: string;
   url_fuente: string;
   coordenadas: Coordenadas | null;

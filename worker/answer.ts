@@ -43,6 +43,9 @@ export const SYSTEM =
   "la cita entre paréntesis del pasaje que respalda esa afirmación; NUNCA " +
   "cites un número de artículo de memoria ni atribuyas un dato a un artículo " +
   "cuyo pasaje no lo contenga. " +
+  "Cuando un pasaje de LEY y uno de criterio, regla o reglamento respalden lo " +
+  "mismo, fundamenta y cita el artículo de ley (la fuente primaria), además " +
+  "del satélite si agrega detalle. " +
   "Si la pregunta no dice de qué impuesto o ley habla (p. ej. 'la tasa " +
   "general' sin más) y los pasajes pertenecen a un dominio específico " +
   "(aduanero, IEPS, etc.), NO presentes ese dominio como LA respuesta: di de " +
