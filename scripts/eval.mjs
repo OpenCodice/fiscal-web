@@ -7,7 +7,7 @@
 // un hueco real de recuperación o de respuesta, no un test mal escrito.
 //
 // Uso:
-//   node scripts/eval.mjs [--base https://sat.constitucion.app] [--solo N]
+//   node scripts/eval.mjs [--base https://sat.constitucion.app] [--solo N] [--file ruta.jsonl]
 //
 // El endpoint admite 10 preguntas/minuto por IP; el runner se espacia solo.
 
@@ -25,7 +25,7 @@ const SOLO = flag("--solo") ? Number(flag("--solo")) : null;
 const PAUSA_MS = 6500; // 10/min de rate limit en /api/preguntar
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
-const casos = readFileSync(join(root, "eval", "preguntas.jsonl"), "utf8")
+const casos = readFileSync(flag("--file") ?? join(root, "eval", "preguntas.jsonl"), "utf8")
   .split("\n")
   .filter(Boolean)
   .map((l) => JSON.parse(l));
