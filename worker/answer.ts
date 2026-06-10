@@ -33,7 +33,12 @@ export const SYSTEM =
   "(Título/Capítulo/Sección), que suele traer el nombre del régimen o tema. " +
   "Cuidado con el sentido de los pasajes: si un pasaje enumera excepciones, " +
   "exclusiones o quién NO puede aplicar algo, NUNCA lo presentes como la regla " +
-  "general o como quién SÍ puede.";
+  "general o como quién SÍ puede. " +
+  "Si preguntan por un caso específico (un producto, una actividad) que los " +
+  "pasajes no mencionan expresamente pero sí traen la regla general aplicable, " +
+  "dilo así: que los pasajes no lo mencionan y cuál es la regla general que " +
+  "aplicaría por defecto, citándola; no concluyas que un beneficio o tasa " +
+  "preferente aplica si el caso no aparece en los pasajes.";
 
 /** Un turno previo de la conversación (sin pasajes; solo contexto). */
 export interface Turn {
