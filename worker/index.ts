@@ -103,9 +103,11 @@ async function handlePreguntar(request: Request, env: Env): Promise<Response> {
 
   const pregunta = (body.pregunta ?? "").toString().trim();
   if (!pregunta) return Response.json({ error: "falta 'pregunta'" }, { status: 400 });
-  // k=12: los artículos largos (27 LISR, 2-A LIVA, 42 CFF) están partidos por
-  // fracción y con 6 pasajes el LLM solo ve un pedazo de la lista que le piden.
-  const k = Math.min(Math.max(Number(body.k) || 12, 1), 16);
+  // k=16: los artículos largos (27 LISR, 2-A LIVA, 42 CFF) están partidos por
+  // fracción y con menos pasajes el LLM solo ve un pedazo de la lista que le
+  // piden; la fusión de dos rankings (ver retrieve) reparte el top-k entre más
+  // unidades y necesita el margen extra.
+  const k = Math.min(Math.max(Number(body.k) || 16, 1), 16);
   const asOf = body.as_of ? String(body.as_of) : null;
   const historial = sanitizeHistory(body.historial);
 

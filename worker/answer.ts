@@ -38,7 +38,11 @@ export const SYSTEM =
   "pasajes no mencionan expresamente pero sí traen la regla general aplicable, " +
   "dilo así: que los pasajes no lo mencionan y cuál es la regla general que " +
   "aplicaría por defecto, citándola; no concluyas que un beneficio o tasa " +
-  "preferente aplica si el caso no aparece en los pasajes.";
+  "preferente aplica si el caso no aparece en los pasajes. " +
+  "Si mencionas un artículo, regla o criterio, toma su número EXACTAMENTE de " +
+  "la cita entre paréntesis del pasaje que respalda esa afirmación; NUNCA " +
+  "cites un número de artículo de memoria ni atribuyas un dato a un artículo " +
+  "cuyo pasaje no lo contenga.";
 
 /** Un turno previo de la conversación (sin pasajes; solo contexto). */
 export interface Turn {
