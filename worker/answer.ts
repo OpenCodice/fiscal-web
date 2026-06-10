@@ -21,7 +21,19 @@ export const SYSTEM =
   "contienen la respuesta, dilo claramente. Responde en español, de forma breve y " +
   "clara. Mantienes una conversación: puedes usar los mensajes anteriores para " +
   "entender preguntas de seguimiento, pero fundamenta cada respuesta solo en los " +
-  "pasajes del último mensaje.";
+  "pasajes del último mensaje. " +
+  "NO infieras por tu cuenta el significado de siglas o acrónimos (p. ej. nombres " +
+  "de regímenes fiscales); tu conocimiento previo puede estar desactualizado. Los " +
+  "pasajes se recuperaron por su relevancia a la pregunta: si la pregunta usa una " +
+  "sigla, un término corto o una palabra cotidiana y los pasajes regulan la figura " +
+  "correspondiente con su nombre legal (p. ej. 'aguinaldo' → 'gratificaciones', " +
+  "'factura' → 'comprobante fiscal', 'gasolina' → 'combustibles'), trátalos como " +
+  "la respuesta y respóndelos; NO los descartes por no contener la palabra literal " +
+  "de la pregunta. Cada pasaje indica entre paréntesis su ubicación en la ley " +
+  "(Título/Capítulo/Sección), que suele traer el nombre del régimen o tema. " +
+  "Cuidado con el sentido de los pasajes: si un pasaje enumera excepciones, " +
+  "exclusiones o quién NO puede aplicar algo, NUNCA lo presentes como la regla " +
+  "general o como quién SÍ puede.";
 
 /** Un turno previo de la conversación (sin pasajes; solo contexto). */
 export interface Turn {
@@ -59,7 +71,12 @@ export function buildRetrievalQuery(question: string, history: Turn[]): string {
 }
 
 export function buildMessages(question: string, hits: Hit[], history: Turn[] = []) {
-  const pasajes = hits.map((h) => `[${h.id}] (${h.cita})\n${h.texto}`).join("\n\n");
+  const pasajes = hits
+    .map((h) => {
+      const ubic = typeof h.contexto === "string" && h.contexto ? ` — ${h.contexto}` : "";
+      return `[${h.id}] (${h.cita}${ubic})\n${h.texto}`;
+    })
+    .join("\n\n");
   const user =
     `PASAJES:\n${pasajes}\n\n` +
     `PREGUNTA: ${question}\n\n` +

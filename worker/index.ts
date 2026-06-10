@@ -103,7 +103,9 @@ async function handlePreguntar(request: Request, env: Env): Promise<Response> {
 
   const pregunta = (body.pregunta ?? "").toString().trim();
   if (!pregunta) return Response.json({ error: "falta 'pregunta'" }, { status: 400 });
-  const k = Math.min(Math.max(Number(body.k) || 6, 1), 12);
+  // k=12: los artículos largos (27 LISR, 2-A LIVA, 42 CFF) están partidos por
+  // fracción y con 6 pasajes el LLM solo ve un pedazo de la lista que le piden.
+  const k = Math.min(Math.max(Number(body.k) || 12, 1), 16);
   const asOf = body.as_of ? String(body.as_of) : null;
   const historial = sanitizeHistory(body.historial);
 
