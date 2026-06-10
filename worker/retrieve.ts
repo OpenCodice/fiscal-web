@@ -53,7 +53,9 @@ async function expandQuery(env: Env, pregunta: string): Promise<string | null> {
         authorization: `Bearer ${env.OPENAI_API_KEY}`,
       },
       body: JSON.stringify({
-        model: env.CHAT_MODEL ?? "gpt-4o-mini",
+        // Utilitaria y barata a propósito: no sigue a CHAT_MODEL (el modelo de
+        // respuesta puede ser caro; reformular no lo amerita).
+        model: "gpt-4o-mini",
         max_tokens: 120,
         temperature: 0,
         messages: [
@@ -122,4 +124,78 @@ export async function retrieve(
     if (hits.length >= k) break;
   }
   return hits;
+}
+
+const numeroParrafo = (id: string) => Number(id.match(/\.p(\d+)$/)?.[1] ?? 0);
+
+/**
+ * Preguntas-lista: los artículos largos (2-A LIVA, 27 LISR) están partidos por
+ * fracción y el top-k trae incisos sueltos — el LLM responde con el pedazo que
+ * vio. Cuando una unidad aporta ≥minHits pasajes, se considera que la pregunta
+ * va sobre ese artículo y se hidratan de KV sus párrafos faltantes (los ids
+ * comparten el prefijo `documento/unidad.p`). Los pasajes recuperados nunca se
+ * recortan; los añadidos entran por orden de párrafo hasta maxTotal.
+ */
+export async function expandUnidades(
+  env: Env,
+  hits: Hit[],
+  asOf: string | null,
+  minHits = 3,
+  maxTotal = 40,
+): Promise<Hit[]> {
+  const porUnidad = new Map<string, Hit[]>();
+  for (const h of hits) {
+    const u = `${h.documento}/${h.clave_unidad}`;
+    porUnidad.set(u, [...(porUnidad.get(u) ?? []), h]);
+  }
+  const expandibles = [...porUnidad.keys()].filter((u) => porUnidad.get(u)!.length >= minHits);
+  if (!expandibles.length) return hits;
+
+  const have = new Set(hits.map((h) => h.id));
+  const faltantes = new Map<string, Hit[]>();
+  await Promise.all(
+    expandibles.map(async (u) => {
+      const { keys } = await env.PASAJES.list({ prefix: `${u}.p` });
+      const ids = keys
+        .map((kk) => kk.name)
+        .filter((id) => !have.has(id))
+        .sort((a, b) => numeroParrafo(a) - numeroParrafo(b));
+      const recs = await Promise.all(ids.map((id) => env.PASAJES.get<Pasaje>(id, "json")));
+      faltantes.set(
+        u,
+        recs
+          .filter((r): r is Pasaje => !!r && vigente(r, asOf))
+          .map((r) => ({ ...r, _score: 0 })),
+      );
+    }),
+  );
+
+  // Presupuesto de añadidos repartido por orden de aparición en el ranking;
+  // dentro de la unidad ganan los párrafos más tempranos (las listas abren
+  // con la regla y sus primeros incisos).
+  let presupuesto = maxTotal - hits.length;
+  const out: Hit[] = [];
+  const emitido = new Set<string>();
+  for (const h of hits) {
+    if (emitido.has(h.id)) continue;
+    const u = `${h.documento}/${h.clave_unidad}`;
+    const extra = faltantes.get(u);
+    if (!extra) {
+      emitido.add(h.id);
+      out.push(h);
+      continue;
+    }
+    faltantes.delete(u);
+    const usados = extra.slice(0, Math.max(0, presupuesto));
+    presupuesto -= usados.length;
+    const completos = [...porUnidad.get(u)!, ...usados].sort(
+      (a, b) => numeroParrafo(a.id) - numeroParrafo(b.id),
+    );
+    for (const c of completos) {
+      if (emitido.has(c.id)) continue;
+      emitido.add(c.id);
+      out.push(c);
+    }
+  }
+  return out;
 }

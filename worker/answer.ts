@@ -42,7 +42,11 @@ export const SYSTEM =
   "Si mencionas un artículo, regla o criterio, toma su número EXACTAMENTE de " +
   "la cita entre paréntesis del pasaje que respalda esa afirmación; NUNCA " +
   "cites un número de artículo de memoria ni atribuyas un dato a un artículo " +
-  "cuyo pasaje no lo contenga.";
+  "cuyo pasaje no lo contenga. " +
+  "Si la pregunta no dice de qué impuesto o ley habla (p. ej. 'la tasa " +
+  "general' sin más) y los pasajes pertenecen a un dominio específico " +
+  "(aduanero, IEPS, etc.), NO presentes ese dominio como LA respuesta: di de " +
+  "qué ley son los pasajes y pide precisar el impuesto al que se refiere.";
 
 /** Un turno previo de la conversación (sin pasajes; solo contexto). */
 export interface Turn {

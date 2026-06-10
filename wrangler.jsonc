@@ -51,8 +51,12 @@
   // Para enrutar por AI Gateway (caché + rate limit + analítica de costo),
   // crea un gateway y añade aquí:
   //   "OPENAI_BASE": "https://gateway.ai.cloudflare.com/v1/<account>/<gateway>/openai"
+  // CHAT_MODEL solo gobierna la respuesta final; la expansión de query usa
+  // gpt-4o-mini fijo (ver retrieve.ts). gpt-4o-mini atribuía datos a artículos
+  // de memoria aun con el pasaje correcto enfrente; gpt-4o sí respeta la
+  // disciplina de citas. Costo acotado por el rate limit (10 preguntas/min).
   "vars": {
     "EMBED_MODEL": "text-embedding-3-small",
-    "CHAT_MODEL": "gpt-4o-mini"
+    "CHAT_MODEL": "gpt-4o"
   }
 }

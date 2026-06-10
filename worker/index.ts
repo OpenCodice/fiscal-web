@@ -1,5 +1,5 @@
 import type { Env } from "./types";
-import { retrieve } from "./retrieve";
+import { retrieve, expandUnidades } from "./retrieve";
 import { buildMessages, buildCitas, parseCitaIds, sanitizeHistory, buildRetrievalQuery, MARK } from "./answer";
 import { buscar } from "./search";
 import { openapiSpec } from "./openapi";
@@ -112,7 +112,9 @@ async function handlePreguntar(request: Request, env: Env): Promise<Response> {
   const historial = sanitizeHistory(body.historial);
 
   // Para seguimientos cortos, la query de recuperación incorpora el contexto previo.
-  const hits = await retrieve(env, buildRetrievalQuery(pregunta, historial), k, asOf);
+  // Si varios pasajes caen en el mismo artículo, se completa la unidad (listas).
+  const recuperados = await retrieve(env, buildRetrievalQuery(pregunta, historial), k, asOf);
+  const hits = await expandUnidades(env, recuperados, asOf);
 
   // Respuesta en NDJSON: una línea JSON por evento.
   //   {"t":"hits","v":[...]}   pasajes recuperados (para mostrar fuentes al instante)
