@@ -59,11 +59,14 @@ jobs:
       - name: Generar embeddings (datos → .data/)
         run: npm run ingest -- ./fiscal-mexicano
 
+      # Las subidas a la API de Cloudflare dan 524/5xx transitorios bajo carga
+      # (el bulk de ~54k claves a KV los provoca); with-retry reintenta con
+      # backoff porque las tres son idempotentes (ver scripts/with-retry.sh).
       - name: Subir vectores a Vectorize (upsert)
-        run: npm run upload:vectors
+        run: bash scripts/with-retry.sh npm run upload:vectors
 
       - name: Subir pasajes a KV
-        run: npm run upload:kv
+        run: bash scripts/with-retry.sh npm run upload:kv
 
       - name: Descargar los PDF oficiales (uno por documento)
         run: npm run pdfs -- ./fiscal-mexicano
@@ -73,6 +76,6 @@ jobs:
           for f in .data/pdfs/*.pdf; do
             clave="$(basename "$f" .pdf)"
             echo "→ fiscal-pdf/${clave}.pdf"
-            npx wrangler r2 object put "fiscal-pdf/${clave}.pdf" \
+            bash scripts/with-retry.sh npx wrangler r2 object put "fiscal-pdf/${clave}.pdf" \
               --file "$f" --content-type application/pdf --remote
           done
