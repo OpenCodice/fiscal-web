@@ -1,15 +1,10 @@
 name: Deploy a producción
 
-# Despliega el Worker (código + frontend) en cada push a main.
-# Gate: typecheck + build antes de desplegar, para no publicar algo roto.
-# Los datos (Vectorize/KV/R2) los maneja reingest.yml; esto es solo el código.
+# Despliega el sitio estático (public/) y su Worker mínimo en cada push a main.
 #
 # Secrets requeridos (en este repo):
-#   CLOUDFLARE_API_TOKEN   permisos "Edit Cloudflare Workers" (Workers Scripts +
-#                          Routes + KV + R2) + Vectorize:Edit
+#   CLOUDFLARE_API_TOKEN   permisos "Edit Cloudflare Workers"
 #   CLOUDFLARE_ACCOUNT_ID  id de la cuenta
-# Nota: los secrets del Worker (OPENAI_API_KEY) se mantienen; `wrangler deploy`
-# no los toca.
 
 on:
   push:
