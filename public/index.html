@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="es-MX">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>OpenCodice — legislación fiscal mexicana, versionada</title>
+    <meta
+      name="description"
+      content="Las leyes fiscales federales, sus reglamentos, la Resolución Miscelánea y los criterios del SAT, un archivo por artículo o regla, con cada cambio registrado en git."
+    />
+    <meta property="og:title" content="OpenCodice — legislación fiscal mexicana, versionada" />
+    <meta
+      property="og:description"
+      content="Leyes fiscales, reglamentos, la Miscelánea y los criterios del SAT, con cada cambio registrado en git."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://sat.constitucion.app/" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%23111'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="/estilo.css" />
+  </head>
+  <body>
+    <main>
+      <header>
+        <p class="marca"><a href="https://constitucion.app">OpenCodice</a> · Fiscal</p>
+        <h1>La legislación fiscal mexicana, versionada como código.</h1>
+      </header>
+
+      <p>
+        Guardamos el texto vigente de las normas fiscales federales en un
+        <a href="https://github.com/OpenCodice/fiscal-mexicano">repositorio público de git</a>,
+        un archivo por artículo, regla o criterio. Cada vez que una norma cambia, queda un
+        registro con la fecha y la diferencia exacta entre lo que decía antes y lo que dice ahora.
+      </p>
+      <p>
+        En materia fiscal eso importa más que en otras: la Miscelánea se modifica varias veces al
+        año y sus versiones oficiales publican el texto completo, no lo que cambió.
+      </p>
+
+      <h2>Qué hay hoy</h2>
+      <p><span class="dato">29 documentos</span> y <span class="dato">5,518 unidades</span> de texto:</p>
+      <ul>
+        <li>
+          <span class="dato">14 leyes</span>: CFF, ISR, IVA, IEPS, Ley Federal de Derechos, Ley
+          Aduanera, Coordinación Fiscal, Ley de Ingresos de la Federación 2026 y otras.
+        </li>
+        <li><span class="dato">7 reglamentos</span>, entre ellos los del CFF, ISR, IVA, IEPS y el Reglamento Interior del SAT.</li>
+        <li>
+          La Resolución Miscelánea Fiscal 2026 (<span class="dato">1,208 reglas</span>), las Reglas
+          Generales de Comercio Exterior y la Resolución de Facilidades Administrativas.
+        </li>
+        <li>Los anexos 2, 5 y 8 de la Miscelánea: fichas de trámite, cantidades actualizadas y tarifas del ISR.</li>
+        <li>Los criterios normativos y los no vinculativos del SAT.</li>
+      </ul>
+      <p class="tenue">
+        Todavía no está toda la legislación fiscal. La lista completa, con la fecha de la versión
+        de cada documento, está en el repositorio.
+      </p>
+
+      <h2>Cómo funciona</h2>
+      <p>
+        Cada lunes un proceso automático descarga los PDF oficiales de la Cámara de Diputados y del
+        SAT, y vuelve a extraer el texto. Si algo cambió, compara cada párrafo nuevo contra el PDF
+        para confirmar que la extracción es fiel y solo entonces lo registra.
+      </p>
+
+      <h2>Cómo consultarlo</h2>
+      <p>
+        El repositorio se puede leer en el navegador, clonar o descargar. Cada documento tiene su
+        carpeta (<code>cff</code>, <code>lisr</code>, <code>rmf-2026</code>) y el
+        <a href="https://github.com/OpenCodice/fiscal-mexicano/commits/main">historial de cambios</a>
+        es la lista de commits.
+      </p>
+
+      <h2>Lo que conviene saber</h2>
+      <ul>
+        <li>
+          El registro de diferencias empieza en junio de 2026. De las reformas anteriores solo
+          tenemos las fechas que anota el propio texto oficial, no la redacción previa.
+        </li>
+        <li>
+          Esto no sustituye a la publicación oficial ni es asesoría fiscal. Para cualquier efecto
+          jurídico, la fuente es el Diario Oficial de la Federación y el portal del SAT.
+        </li>
+      </ul>
+
+      <footer>
+        <p>
+          Parte de <a href="https://constitucion.app">OpenCodice</a>. El código y los datos están en
+          <a href="https://github.com/OpenCodice">github.com/OpenCodice</a>.
+        </p>
+      </footer>
+    </main>
+  </body>
+</html>

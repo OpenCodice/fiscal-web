@@ -41,11 +41,5 @@ jobs:
       - name: Instalar dependencias
         run: npm ci
 
-      - name: Typecheck
-        run: npm run typecheck
-
-      - name: Build (frontend)
-        run: npm run build
-
       - name: Deploy (Worker + assets)
         run: npx wrangler deploy

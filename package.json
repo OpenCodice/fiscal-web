@@ -1,36 +1,12 @@
 {
   "name": "fiscal-web",
-  "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "UI web para el RAG del corpus fiscal mexicano (Cloudflare Workers + Vectorize + Preact)",
   "scripts": {
-    "dev": "concurrently -k -n api,web -c blue,magenta \"npm:dev:api\" \"npm:dev:web\"",
-    "dev:remote": "concurrently -k -n api,web -c blue,magenta \"npm:dev:api:remote\" \"npm:dev:web\"",
-    "dev:web": "vite",
-    "dev:api": "wrangler dev --port 8787",
-    "dev:api:remote": "wrangler dev --port 8787 --remote",
-    "build": "vite build",
-    "deploy": "vite build && wrangler deploy",
-    "eval": "node scripts/eval.mjs",
-    "ingest": "node scripts/ingest.mjs",
-    "pdfs": "node scripts/fetch-pdfs.mjs",
-    "upload:vectors": "wrangler vectorize upsert fiscal-pasajes --file ./.data/vectors.ndjson --batch-size 500",
-    "upload:kv": "wrangler kv bulk put ./.data/kv-pasajes.json --binding PASAJES --preview false --remote",
-    "typecheck": "tsc -p tsconfig.json && tsc -p tsconfig.worker.json"
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20250101.0",
-    "@preact/preset-vite": "^2.9.0",
-    "@tailwindcss/vite": "^4.0.0",
-    "concurrently": "^9.1.0",
-    "preact": "^10.25.0",
-    "tailwindcss": "^4.0.0",
-    "typescript": "^5.7.0",
-    "vite": "^6.0.0",
     "wrangler": "^4.98.0"
-  },
-  "dependencies": {
-    "pdfjs-dist": "^6.0.227"
   }
 }
