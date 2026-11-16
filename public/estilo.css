@@ -122,3 +122,42 @@ code {
 .marca a {
   text-decoration: none;
 }
+
+pre {
+  margin: 0 0 1.1em;
+  padding: 0.75em 1em;
+  overflow-x: auto;
+  border: 1px solid var(--linea);
+}
+
+pre code {
+  font-size: 0.8em;
+}
+
+.cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.5em 1.5em;
+  margin-bottom: 2.5rem;
+}
+
+.cabecera .marca {
+  margin: 0;
+}
+
+.cabecera nav {
+  display: flex;
+  gap: 1.25em;
+}
+
+.cabecera nav a {
+  text-decoration: none;
+}
+
+.cabecera nav a:hover,
+.cabecera nav a[aria-current="page"] {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+}
