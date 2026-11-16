@@ -59,9 +59,12 @@
 
       <h2>Cómo funciona</h2>
       <p>
-        Cada lunes un proceso automático descarga los PDF oficiales de la Cámara de Diputados y del
-        SAT, y vuelve a extraer el texto. Si algo cambió, compara cada párrafo nuevo contra el PDF
-        para confirmar que la extracción es fiel y solo entonces lo registra.
+        Cada lunes se descargan los PDF oficiales de la Cámara de Diputados y del SAT, y un
+        extractor determinista vuelve a generar el texto. Un agente de IA revisa contra el PDF
+        solo lo que cambió y, si encuentra un defecto de extracción, repara el extractor. Deciden
+        pruebas deterministas que el agente no controla: solo se publica lo verificado y lo demás
+        espera a la semana siguiente. Nadie edita el texto a mano.
+        <a href="https://constitucion.app/estado">Ver el status del sistema</a>.
       </p>
 
       <h2>Cómo consultarlo</h2>
@@ -69,14 +72,22 @@
         El repositorio se puede leer en el navegador, clonar o descargar. Cada documento tiene su
         carpeta (<code>cff</code>, <code>lisr</code>, <code>rmf-2026</code>) y el
         <a href="https://github.com/OpenCodice/fiscal-mexicano/commits/main">historial de cambios</a>
-        es la lista de commits.
+        tiene un commit por documento, con el tipo de cambio en el título:
+        <code>Reforma LFPCA (2026-06-09): 93 artículos</code> o
+        <code>Corrección de extracción RLIVA: 9 artículos</code>. Así,
+        <code>git log -- cff/</code> es la historia del CFF.
+      </p>
+      <p>
+        Las leyes fiscales también están, con el resto de las leyes federales, en
+        <a href="https://github.com/OpenCodice/leyes-federales">leyes-federales</a>.
       </p>
 
       <h2>Lo que conviene saber</h2>
       <ul>
         <li>
-          El registro de diferencias empieza en junio de 2026. De las reformas anteriores solo
-          tenemos las fechas que anota el propio texto oficial, no la redacción previa.
+          La historia de cada documento empieza en su alta, en junio de 2026. De las reformas
+          anteriores solo están las fechas, en <code>metadata/{documento}/reformas.json</code>, no
+          la redacción previa.
         </li>
         <li>
           Esto no sustituye a la publicación oficial ni es asesoría fiscal. Para cualquier efecto
@@ -88,6 +99,9 @@
         <p>
           Parte de <a href="https://constitucion.app">OpenCodice</a>. El código y los datos están en
           <a href="https://github.com/OpenCodice">github.com/OpenCodice</a>.
+          Los datos son de dominio público
+          (<a href="https://creativecommons.org/publicdomain/zero/1.0/deed.es">CC0</a>) y el código
+          es MIT.
         </p>
       </footer>
     </main>
