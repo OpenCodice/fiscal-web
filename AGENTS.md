@@ -5,6 +5,10 @@ repos de datos en [github.com/OpenCodice](https://github.com/OpenCodice).
 
 - `public/index.html` y `public/estilo.css` — todo el sitio. Sin build, sin
   framework, sin JavaScript en la página.
+- `public/og.png` — la imagen para redes (og:image), con el diseño de las
+  tarjetas de constitucion-web (`scripts/lib/tarjeta.mjs`, `dibujar` con
+  `sitio: "sat.constitucion.app"`); si cambia el texto de la página, se vuelve
+  a dibujar desde ahí. `public/robots.txt` y `public/sitemap.xml` son fijos.
 - `worker/index.js` — responde `410` en las rutas del servicio de búsqueda que
   se retiró (`/api/*`, `/mcp`, `/openapi.json`, `/pdf/*`) y redirige cualquier
   otra ruta al inicio.
