@@ -344,6 +344,21 @@ pre code {
   stroke-width: 2.5;
 }
 
+/* Una palabra que depende del tema: en oscuro la escala va al revés. */
+.solo-oscuro {
+  display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  .solo-claro {
+    display: none;
+  }
+
+  .solo-oscuro {
+    display: inline;
+  }
+}
+
 /* El pie del sitio: fuera de <main>, a todo lo ancho. */
 .pie {
   margin-top: 4.5rem;
