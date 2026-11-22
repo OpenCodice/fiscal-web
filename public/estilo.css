@@ -291,6 +291,61 @@ pre code {
   font-weight: 500;
 }
 
+/* Una colección en una fila: su cifra, su nombre con una frase y una flecha. */
+.filas {
+  margin: -0.75rem 0 1.1em;
+}
+
+.fila {
+  display: grid;
+  grid-template-columns: 7.5rem 1fr auto;
+  gap: 0.25rem 1.25rem;
+  align-items: baseline;
+  padding: 1.125rem 0;
+  border-bottom: 1px solid var(--linea);
+  color: var(--texto);
+  text-decoration: none;
+}
+
+.fila:hover {
+  color: var(--texto);
+}
+
+a.fila:hover strong {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+}
+
+.fila .cifra {
+  font-family: var(--mono);
+  font-size: 1.875rem;
+  line-height: 2.125rem;
+  letter-spacing: -0.02em;
+}
+
+.fila strong {
+  font-weight: 600;
+}
+
+.fila .flecha {
+  color: var(--tenue);
+}
+
+@media (max-width: 30rem) {
+  .fila {
+    grid-template-columns: 4.25rem 1fr;
+  }
+
+  .fila .cifra {
+    font-size: 1.5rem;
+  }
+
+  .fila .flecha {
+    display: none;
+  }
+}
+
 /* Una figura que sale de la columna, centrada en la ventana. */
 .ancha {
   width: min(100vw - 2.5rem, var(--ancha));
