@@ -52,7 +52,7 @@
   --sobre-clara: var(--texto);
   --sobre-oscura: var(--fondo);
   --cambio: #225ea8;
-  --a-favor: #2f8fd8;
+  --a-favor: #2a78c4;
   --en-contra: #c0362c;
   --abstencion: #8a8a8a;
   --agregado-fondo: #e7f1fb;
@@ -83,7 +83,7 @@
     --e6: #b5e3b5;
     --e7: #e3f4b1;
     --cambio: #5b9bea;
-    --a-favor: #6cb6f5;
+    --a-favor: #62a6ee;
     --en-contra: #f0766b;
     --agregado-fondo: #12263f;
     --agregado-texto: #b9d6f7;
