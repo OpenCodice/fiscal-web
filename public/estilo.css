@@ -33,6 +33,14 @@
   src: url("/fuentes/ibm-plex-mono-latin-500-normal.woff2") format("woff2");
 }
 
+/* Solo para la marca del pie. */
+@font-face {
+  font-family: "Newsreader";
+  font-weight: 500;
+  font-display: swap;
+  src: url("/fuentes/newsreader-latin-500-normal.woff2") format("woff2");
+}
+
 :root {
   --fondo: #ffffff;
   --texto: #111111;
@@ -439,7 +447,8 @@ a.fila:hover strong {
 }
 
 .pie-marca a {
-  font-size: 1.25rem;
+  font-family: "Newsreader", "Iowan Old Style", Georgia, serif;
+  font-size: 1.5rem;
   font-weight: 500;
   letter-spacing: -0.01em;
   color: var(--texto);
