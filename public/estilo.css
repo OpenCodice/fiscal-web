@@ -1,8 +1,68 @@
+@font-face {
+  font-family: "IBM Plex Sans";
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fuentes/ibm-plex-sans-latin-400-normal.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "IBM Plex Sans";
+  font-weight: 500;
+  font-display: swap;
+  src: url("/fuentes/ibm-plex-sans-latin-500-normal.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "IBM Plex Sans";
+  font-weight: 600;
+  font-display: swap;
+  src: url("/fuentes/ibm-plex-sans-latin-600-normal.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "IBM Plex Mono";
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fuentes/ibm-plex-mono-latin-400-normal.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "IBM Plex Mono";
+  font-weight: 500;
+  font-display: swap;
+  src: url("/fuentes/ibm-plex-mono-latin-500-normal.woff2") format("woff2");
+}
+
 :root {
   --fondo: #ffffff;
   --texto: #111111;
   --tenue: #6b6b6b;
   --linea: #e4e4e4;
+  --vacia: #ededed;
+  --superficie: #f6f6f6;
+  --enlace: #225ea8;
+  --enlace-hover: #0c2c84;
+  --e1: #e3f4b1;
+  --e2: #b5e3b5;
+  --e3: #7dcdbb;
+  --e4: #41b6c4;
+  --e5: #1d91c0;
+  --e6: #225ea8;
+  --e7: #0c2c84;
+  --sobre-clara: var(--texto);
+  --sobre-oscura: var(--fondo);
+  --cambio: #225ea8;
+  --a-favor: #225ea8;
+  --en-contra: #c0362c;
+  --abstencion: #8a8a8a;
+  --agregado-fondo: #e7f1fb;
+  --agregado-texto: #123a70;
+  --quitado-fondo: #fbeceb;
+  --quitado-texto: #7a1f18;
+  --sans: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --columna: 45rem;
+  --ancha: 67.5rem;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -11,6 +71,24 @@
     --texto: #ededed;
     --tenue: #9a9a9a;
     --linea: #2a2a2a;
+    --vacia: #242424;
+    --superficie: #171717;
+    --enlace: #86b7f0;
+    --enlace-hover: #b7d4f7;
+    --e1: #1b3f9a;
+    --e2: #2562b0;
+    --e3: #1d91c0;
+    --e4: #41b6c4;
+    --e5: #7dcdbb;
+    --e6: #b5e3b5;
+    --e7: #e3f4b1;
+    --cambio: #5b9bea;
+    --a-favor: #5b9bea;
+    --en-contra: #f0766b;
+    --agregado-fondo: #12263f;
+    --agregado-texto: #b9d6f7;
+    --quitado-fondo: #3a1715;
+    --quitado-texto: #f3b3ad;
   }
 }
 
@@ -27,20 +105,20 @@ body {
   margin: 0;
   background: var(--fondo);
   color: var(--texto);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-  font-size: clamp(1.0625rem, 0.95rem + 0.5vw, 1.25rem);
+  font-family: var(--sans);
+  font-size: 1.125rem;
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
 }
 
 main {
-  max-width: 41rem;
+  max-width: var(--columna);
   margin: 0 auto;
-  padding: clamp(2.5rem, 8vw, 6rem) 1.25rem 5rem;
+  padding: 1.75rem 1.25rem 0;
 }
 
 header {
-  margin-bottom: 3.5rem;
+  margin-bottom: 3rem;
 }
 
 .marca {
@@ -50,20 +128,25 @@ header {
   letter-spacing: -0.01em;
 }
 
+.marca a {
+  color: inherit;
+  text-decoration: none;
+}
+
 h1 {
   margin: 0;
-  font-size: clamp(1.6rem, 1.2rem + 2vw, 2.4rem);
+  font-size: clamp(1.875rem, 1.3rem + 2.4vw, 2.625rem);
   font-weight: 600;
-  line-height: 1.2;
+  line-height: 1.15;
   letter-spacing: -0.02em;
   text-wrap: balance;
 }
 
 h2 {
-  margin: 3.5rem 0 1rem;
+  margin: 4.5rem 0 1.25rem;
   padding-top: 1.25rem;
   border-top: 1px solid var(--linea);
-  font-size: 0.8em;
+  font-size: 0.833em;
   font-weight: 500;
   color: var(--tenue);
 }
@@ -82,19 +165,19 @@ li {
 }
 
 a {
-  color: inherit;
+  color: var(--enlace);
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 0.18em;
 }
 
 a:hover {
-  text-decoration-thickness: 2px;
+  color: var(--enlace-hover);
 }
 
 a:focus-visible {
-  outline: 2px solid var(--texto);
-  outline-offset: 3px;
+  outline: 2px solid var(--enlace);
+  outline-offset: 2px;
 }
 
 .dato {
@@ -106,32 +189,36 @@ a:focus-visible {
   color: var(--tenue);
 }
 
+.nota {
+  font-size: 0.833em;
+  color: var(--tenue);
+}
+
 footer {
   margin-top: 4.5rem;
   padding-top: 1.25rem;
   border-top: 1px solid var(--linea);
-  font-size: 0.85em;
+  font-size: 0.833em;
   color: var(--tenue);
 }
 
 code {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 0.9em;
-}
-
-.marca a {
-  text-decoration: none;
+  font-family: var(--mono);
+  font-size: 0.85em;
 }
 
 pre {
   margin: 0 0 1.1em;
-  padding: 0.75em 1em;
+  padding: 1rem 1.125rem;
   overflow-x: auto;
   border: 1px solid var(--linea);
+  border-radius: 8px;
+  background: var(--superficie);
 }
 
 pre code {
-  font-size: 0.8em;
+  font-size: 0.78em;
+  line-height: 1.6;
 }
 
 .cabecera {
@@ -139,8 +226,8 @@ pre code {
   flex-wrap: wrap;
   justify-content: space-between;
   align-items: baseline;
-  gap: 0.5em 1.5em;
-  margin-bottom: 2.5rem;
+  gap: 0.25em 1.5em;
+  margin-bottom: 3.5rem;
 }
 
 .cabecera .marca {
@@ -149,15 +236,204 @@ pre code {
 
 .cabecera nav {
   display: flex;
-  gap: 1.25em;
+  flex-wrap: wrap;
+  gap: 0.25em 1.375em;
+  font-size: 0.833em;
 }
 
 .cabecera nav a {
+  padding: 0.6em 0;
+  color: var(--tenue);
   text-decoration: none;
 }
 
 .cabecera nav a:hover,
 .cabecera nav a[aria-current="page"] {
+  color: var(--texto);
+}
+
+.botones {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0 0 1.1em;
+}
+
+.boton {
+  display: inline-flex;
+  align-items: center;
+  min-height: 3rem;
+  padding: 0 1.375rem;
+  border: 1.5px solid var(--texto);
+  border-radius: 8px;
+  background: var(--texto);
+  color: var(--fondo);
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.2;
+  text-decoration: none;
+}
+
+.boton:hover {
+  color: var(--fondo);
+}
+
+.boton-borde,
+.boton-borde:hover {
+  background: transparent;
+  color: var(--texto);
+}
+
+.botones > a:not(.boton) {
+  padding: 0 0.375rem;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+/* Una figura que sale de la columna, centrada en la ventana. */
+.ancha {
+  width: min(100vw - 2.5rem, var(--ancha));
+  margin-left: 50%;
+  transform: translateX(-50%);
+}
+
+.desliza {
+  overflow-x: auto;
+}
+
+.cuadros {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.e0 { fill: var(--vacia); }
+.e1 { fill: var(--e1); }
+.e2 { fill: var(--e2); }
+.e3 { fill: var(--e3); }
+.e4 { fill: var(--e4); }
+.e5 { fill: var(--e5); }
+.e6 { fill: var(--e6); }
+.e7 { fill: var(--e7); }
+.c-cambio { fill: var(--cambio); }
+.c-derogado { fill: var(--en-contra); }
+
+/* El texto encima de un cuadro: oscuro sobre los pasos claros de la escala. */
+.s1, .s2, .s3, .s4, .s5 { fill: var(--sobre-clara); }
+.s6, .s7 { fill: var(--sobre-oscura); }
+
+@media (prefers-color-scheme: dark) {
+  .s1, .s2 { fill: var(--sobre-clara); }
+  .s3, .s4, .s5, .s6, .s7 { fill: var(--sobre-oscura); }
+}
+
+.cuadros text {
+  font-family: var(--mono);
+  font-weight: 500;
+}
+
+.cuadros .eje {
+  font-weight: 400;
+  fill: var(--tenue);
+}
+
+.cuadros .marca-cuadro {
+  fill: none;
+  stroke: var(--texto);
+  stroke-width: 2.5;
+}
+
+/* El pie del sitio: fuera de <main>, a todo lo ancho. */
+.pie {
+  margin-top: 4.5rem;
+  padding: 0;
+  border-top: 1px solid var(--linea);
+  font-size: 1rem;
+  color: var(--texto);
+}
+
+.pie-cuerpo {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 1.75rem 4rem;
+  max-width: var(--ancha);
+  margin: 0 auto;
+  padding: 2.5rem 1.25rem 0;
+}
+
+.pie-marca {
+  flex: 1 1 16rem;
+  max-width: 21rem;
+}
+
+.pie-marca a {
+  font-size: 1.25rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--texto);
+  text-decoration: none;
+}
+
+.pie-marca p,
+.pie-legal {
+  margin: 0.6rem 0 0;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: var(--tenue);
+}
+
+.pie-columnas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem 4.5rem;
+}
+
+.pie nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  font-size: 0.9375rem;
+}
+
+.pie nav span {
+  padding-bottom: 0.5rem;
+  font-size: 0.8125rem;
+  color: var(--tenue);
+}
+
+.pie nav a {
+  padding: 0.25rem 0;
+  color: var(--texto);
+  text-decoration: none;
+}
+
+.pie nav a:hover {
   text-decoration: underline;
-  text-decoration-thickness: 1px;
+}
+
+.pie-legal {
+  max-width: var(--ancha);
+  margin: 0 auto;
+  padding: 1.25rem 1.25rem 0;
+  font-size: 0.8125rem;
+}
+
+.pie-legal a {
+  color: inherit;
+}
+
+.pie img {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-top: 1.5rem;
+  mix-blend-mode: multiply;
+}
+
+@media (prefers-color-scheme: dark) {
+  .pie img {
+    mix-blend-mode: lighten;
+  }
 }
