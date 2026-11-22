@@ -516,3 +516,13 @@ a.fila:hover strong {
     mix-blend-mode: lighten;
   }
 }
+
+/* En pantallas angostas la ilustración entera quedaría de menos de 100px de
+   alto: se muestra más grande y recortada a los lados, centrada en la catedral. */
+@media (max-width: 40rem) {
+  .pie img {
+    height: 13rem;
+    object-fit: cover;
+    object-position: 36% 100%;
+  }
+}
